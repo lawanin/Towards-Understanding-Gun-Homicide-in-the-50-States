@@ -1,0 +1,12 @@
+name: final-project
+title: final-project
+username:
+account: nplawani
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3784228
+bundleId: 4338492
+url: https://nplawani.shinyapps.io/final-project/
+when: 1615607640.60398
+asMultiple: FALSE
+asStatic: FALSE
