@@ -9,12 +9,13 @@
 
 library(shiny)
 library(tidyverse)
+source("data.R")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(
   "Exploring Variables of Gun Violence",
-  tabPanel("Model"
-           ),
+  tabPanel("Model",
+           mainPanel(plotOutput("map"))),
   tabPanel("Discussion",
            titlePanel("Potential Sources"),
            h3("Gun Violence Statistics"),
@@ -84,7 +85,16 @@ ui <- navbarPage(
            p("https://github.com/lawanin/gov1005-recitation-week-4")))
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {}
+server <- function(input, output) {
+  output$map <- renderPlot({crime_gdp %>%
+      ggplot(aes(x = fct_reorder(state, gdp_capita), y = crime_per_capita, fill = state)) +
+      geom_col() + 
+      labs(title = "Violent crime by states in Order of asecending GDP per capita", 
+           subtitle = "More Poor States seem to have higher violence", 
+           x = "States in order of ascending GDP per capita", 
+           y = "Crime per capita")
+  })
+}
 
 # Run the application 
 shinyApp(ui = ui, server = server)
