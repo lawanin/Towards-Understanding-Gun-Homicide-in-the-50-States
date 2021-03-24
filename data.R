@@ -92,11 +92,21 @@ state_gdp <- read_csv("raw_data/bea/gdp_state/qgsp_all_R.csv") %>%
 
 state_income <- read_csv("raw_data/bea/income_state/SA27N_1998_2016__ALL_AREAS.csv")
 
-write_rds(file = "data", data)
-
 # Graph with Variable representing ratio of gdp/per capita to cime per capita. 
 # Essentially the same as dividing gdp by crime, but this feels better. 
 
 crime_gdp <- inner_join(fbi_state, state_gdp, by = "state") %>% 
-  mutate(gdp_capita = x2016q4 / population) 
+  mutate(gdp_capita = x2016q4 / population) %>% 
+  arrange(gdp_capita) %>% 
+  mutate(gdp_id = c(1:50)) 
 
+crime_gdp_graph <- crime_gdp %>%
+  ggplot(aes(x = gdp_id, y = crime_per_capita, fill = state)) +
+  geom_col() + 
+  labs(title = "Violent crime by states in Order of asecending GDP per capita", 
+       subtitle = "More Poor States seem to have higher violence", 
+       x = "States in order of ascending GDP per capita", 
+       y = "Crime per capita") +
+  geom_smooth()
+
+ggsave("crime_gdp.png", crime_gdp_graph)

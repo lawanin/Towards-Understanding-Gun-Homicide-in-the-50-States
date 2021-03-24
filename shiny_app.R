@@ -15,7 +15,7 @@ source("data.R")
 ui <- navbarPage(
   "Exploring Variables of Gun Violence",
   tabPanel("Model",
-           mainPanel(plotOutput("map"))),
+           mainPanel(imageOutput("crimegraph"))),
   tabPanel("Discussion",
            titlePanel("Potential Sources"),
            h3("Gun Violence Statistics"),
@@ -86,14 +86,12 @@ ui <- navbarPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  output$map <- renderPlot({crime_gdp %>%
-      ggplot(aes(x = fct_reorder(state, gdp_capita), y = crime_per_capita, fill = state)) +
-      geom_col() + 
-      labs(title = "Violent crime by states in Order of asecending GDP per capita", 
-           subtitle = "More Poor States seem to have higher violence", 
-           x = "States in order of ascending GDP per capita", 
-           y = "Crime per capita")
-  })
+  output$crimegraph <- renderImage({
+    list(src = 'crime_gdp.png',
+         width = 500,
+         height = 500,
+         alt = "Graph")
+  }, deleteFile = FALSE)
 }
 
 # Run the application 
