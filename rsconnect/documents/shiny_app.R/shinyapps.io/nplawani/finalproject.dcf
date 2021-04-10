@@ -5,9 +5,9 @@ account: nplawani
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3905360
-bundleId: 4453260
+bundleId: 4454112
 url: https://nplawani.shinyapps.io/finalproject/
-when: 1618033357.41292
+when: 1618053202.70224
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data|data.R
+ignoredFiles: data.R|test.Rmd

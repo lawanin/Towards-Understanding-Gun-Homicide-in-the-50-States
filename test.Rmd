@@ -9,15 +9,19 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rstanarm)
+
 ```
 
 ```{r}
-a <- stan_glm(data = crimegdpfile, 
-                  formula = big_crime_per_capita ~ gdp_id, 
-                  refresh = 0, 
-                  seed = 87)
+crimegdpfile %>%
+  select(state, gdp_id, gdp_capita) %>% 
+  group_by(state) %>% 
+  summarize(mean_gdp_id = mean(gdp_id), 
+            mean_gdp_capita = mean(gdp_capita)) %>% 
+  arrange(mean_gdp_id) %>% 
+  ggplot(aes(x = mean_gdp_id, mean_gdp_capita)) +
+  geom_col()
 
-print(a, digits = 4)
 ```
 ```{r}
 crime_gdp %>% 

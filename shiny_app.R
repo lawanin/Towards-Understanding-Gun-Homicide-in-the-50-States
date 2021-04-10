@@ -16,6 +16,7 @@ ui <- navbarPage(
   "Exploring Variables of Gun Violence",
   tabPanel("Graphics",
                   mainPanel(imageOutput("crimegraph")),
+                  mainPanel(imageOutput("crimegraphlimited")),
                   mainPanel(dataTableOutput("gdporder"))),
   tabPanel("Model", 
            mainPanel(imageOutput("crimegdpfit")),
@@ -107,12 +108,28 @@ server <- function(input, output) {
   output$crimegraph <- renderPlot({
     crimegdpfile %>%
       ggplot(aes(x = gdp_id, y = big_crime_per_capita)) +
-      geom_point(alpha = 0.5) + 
+      geom_jitter(alpha = 0.5, 
+                  height = 0.2, 
+                  width = 0.2) + 
       labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita from 2004-2016", 
-           subtitle = "The Linear Fit Suggests a Slight Decrease in Crime as States grow Richer, but this is hard to observe", 
+           subtitle = "The linear fit suggests a  decrease in crime as states grow richer, but there are marked outliers in mid-range GDPs", 
            x = "States in order of ascending GDP per capita", 
            y = "Crime per capita") +
       scale_x_continuous(breaks = c(1 : 50)) +
+      geom_smooth(method = "lm") 
+  })
+  output$crimegraphlimited <- renderPlot({
+    crimegdpfile %>%
+      ggplot(aes(x = gdp_id, y = big_crime_per_capita)) +
+      geom_jitter(alpha = 0.5, 
+                  height = 0.2, 
+                  width = 0.2) + 
+      labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita from 2004-2016", 
+           subtitle = "The linear fit suggests a slight decrease in crime as states grow richer, and this becomes easier to see with outliers excluded", 
+           x = "States in order of ascending GDP per capita", 
+           y = "Crime per capita") +
+      scale_x_continuous(breaks = c(1 : 50)) +
+      scale_y_continuous(limits = c(0, 6)) +
       geom_smooth(method = "lm") 
   })
   output$gdporder <- renderDataTable({

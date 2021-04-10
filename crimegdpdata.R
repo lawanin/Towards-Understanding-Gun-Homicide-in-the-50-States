@@ -1,12 +1,13 @@
 library(tidyverse) 
-
+library(rstanarm)
 crimegdpfile <- read_rds("crimegdpfile.rds")
 fit1 <- read_rds("fit1.rds")
 
 gdp_order <- crimegdpfile %>%
-  select(state, gdp_id) %>% 
+  select(state, gdp_id, gdp_capita) %>% 
   group_by(state) %>% 
-  summarize(mean_gdp_id = mean(gdp_id)) %>% 
+  summarize(mean_gdp_id = mean(gdp_id), 
+            mean_gdp_capita = mean(gdp_capita)) %>% 
   arrange(mean_gdp_id)
 
 
