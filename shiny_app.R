@@ -100,10 +100,8 @@ server <- function(input, output) {
     crimegdpfile %>%
       ggplot(aes(x = gdp_id, y = big_crime_per_capita)) +
       geom_point(alpha = 0.5) + 
-      labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita
-from 2004-2016", 
-           subtitle = "The Linear Fit Suggests a Slight Decrease in Crime as
-States grow Richer, but this is hard to observe", 
+      labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita from 2004-2016", 
+           subtitle = "The Linear Fit Suggests a Slight Decrease in Crime as States grow Richer, but this is hard to observe", 
            x = "States in order of ascending GDP per capita", 
            y = "Crime per capita") +
       scale_x_continuous(breaks = c(1 : 50)) +
