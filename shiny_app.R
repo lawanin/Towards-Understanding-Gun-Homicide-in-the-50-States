@@ -21,7 +21,7 @@ ui <- navbarPage(
            mainPanel(imageOutput("crimegdpfit")),
            h3("Discussion"), 
            p("The data in the graphics section, namely the gun deaths per capita
-             and ranking of GDP per capita in each state from 2004 to 2017, was 
+             and ranking of GDP per capita in each state from 2004 to 2016, was 
              fitted to a linear regression and the graphed posterior for the value 
              of the parameter gdp_1 was obtained. This value represents the 
              change in crime per 100,000 people for each change in ranking of 
@@ -100,7 +100,8 @@ server <- function(input, output) {
     crimegdpfile %>%
       ggplot(aes(x = gdp_id, y = big_crime_per_capita)) +
       geom_point(alpha = 0.5) + 
-      labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita", 
+      labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita
+from 2004-2016", 
            subtitle = "The Linear Fit Suggests a Slight Decrease in Crime as
 States grow Richer, but this is hard to observe", 
            x = "States in order of ascending GDP per capita", 
