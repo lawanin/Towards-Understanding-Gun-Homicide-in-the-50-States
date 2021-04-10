@@ -9,13 +9,28 @@
 
 library(shiny)
 library(tidyverse)
-source("data.R")
+source("crimegdpdata.R")
 
 # Define UI for application that draws a histogram
 ui <- navbarPage(
   "Exploring Variables of Gun Violence",
-  tabPanel("Model",
-           mainPanel(imageOutput("crimegraph"))),
+  tabPanel("Graphics",
+                  mainPanel(imageOutput("crimegraph")),
+                  mainPanel(dataTableOutput("gdporder"))),
+  tabPanel("Model", 
+           mainPanel(imageOutput("crimegdpfit")),
+           h3("Discussion"), 
+           p("The data in the graphics section, namely the gun deaths per capita
+             and ranking of GDP per capita in each state from 2004 to 2017, was 
+             fitted to a linear regression and the graphed posterior for the value 
+             of the parameter gdp_1 was obtained. This value represents the 
+             change in crime per 100,000 people for each change in ranking of 
+             state GDP. The model yields a most likely value of -.019, with a 95% 
+             confidence roughly between -.031 and -.007. The model suggests,
+             however, as the graph's line shows, that there is definitely negative 
+             correlation between crime and GDP. For context, the model suggests
+             that a difference of 30 in GDP per capita ranking results in roughly
+             1 fewer gun death per 100,000 people in the state.")),
   tabPanel("Discussion",
            titlePanel("Potential Sources"),
            h3("Gun Violence Statistics"),
@@ -66,18 +81,13 @@ ui <- navbarPage(
   tabPanel("About", 
            titlePanel("About"),
            h3("Project Background and Motivations"),
-           p("Hello, right now I have all my data loaded into an R script called
-             'data' in my final project directory. As for processing so far, I 
-             have cleaned the data which came from 4 different sources, and have 
-             read their accompanying documentation. I have been unsuccessful in 
-             getting this data onto Shiny, whose language I have realized is 
-             very different from what we have worked with in the R markdowns. 
-             Since, I was not ready to produce a full map releveant to my project, 
-             I intended instead to put the various cleaned data tables into the 
-             Shiny App. This proved much more difficult than I expected. First 
-             judging from what we did in Problem Set 4, perhaps each dataset 
-             needs to be in a separate R file. Then, I need to become more 
-             conversant in the language of Shiny"),
+           p("Hello, this is my final project on Gun Violence in progress. Right
+             now, I am settling into ways of displaying the various factors on 
+             Gun Violence which I am interested in exploring. I am using one
+             such factor, state GDP per capita, as a working test of how to 
+             process and display these reults. It should be noted that the data 
+             currently on the site deals with crime at large and not gun crime. 
+             I do have this data, but have not worked with it yet. x"),
            h3("About Me"),
            p("My name is Nosa and I study Comparative Literature. 
              You can reach me at nlawani@college.harvard.edu."),
@@ -86,12 +96,24 @@ ui <- navbarPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  output$crimegraph <- renderImage({
-    list(src = 'crime_gdp.png',
-         width = 500,
-         height = 500,
-         alt = "Graph")
-  }, deleteFile = FALSE)
+  output$crimegraph <- renderPlot({
+    crimegdpfile %>%
+      ggplot(aes(x = gdp_id, y = big_crime_per_capita)) +
+      geom_point(alpha = 0.5) + 
+      labs(title = "Gun Deaths per 100k by States in Order of Asecending GDP per Capita", 
+           subtitle = "The Linear Fit Suggests a Slight Decrease in Crime as
+States grow Richer, but this is hard to observe", 
+           x = "States in order of ascending GDP per capita", 
+           y = "Crime per capita") +
+      scale_x_continuous(breaks = c(1 : 50)) +
+      geom_smooth(method = "lm") 
+  })
+  output$gdporder <- renderDataTable({
+    gdp_order
+  })
+  output$crimegdpfit <- renderPlot({
+    fit_1_plot
+  })
 }
 
 # Run the application 

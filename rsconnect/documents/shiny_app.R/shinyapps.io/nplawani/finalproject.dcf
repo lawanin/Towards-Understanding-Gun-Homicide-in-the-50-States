@@ -1,0 +1,13 @@
+name: finalproject
+title: finalproject
+username:
+account: nplawani
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3905360
+bundleId: 4453040
+url: https://nplawani.shinyapps.io/finalproject/
+when: 1618024296.40006
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: data|data.R
