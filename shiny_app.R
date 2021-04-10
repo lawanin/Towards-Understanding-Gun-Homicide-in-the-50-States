@@ -97,7 +97,7 @@ ui <- navbarPage(
              such factor, state GDP per capita, as a working test of how to 
              process and display these reults."),
            h3("About Me"),
-           p("My name is Nosa. I like to read  and plan to major in 
+           p("My name is Nosa Lawani. I like to read  and plan to major in 
            Comparative Literature. You can reach me at nlawani@college.harvard.edu"),
            h3("Repo Link"),
            p("https://github.com/lawanin/Towards-Understanding-Gun-Homicide-in-the-50-States")))
