@@ -86,18 +86,16 @@ ui <- navbarPage(
              in conversation gun violence. Particulary by those who push back 
              against corellation by gun violence. Though PMUS data exists and I
               would love to do something on a more local level, perhaps in 
-              Virginia, I do not know whether the preceeding data exixts for 
-              states.")),
+              Virginia, I do not know whether the preceeding data exists for 
+              state counties")),
   tabPanel("About", 
            titlePanel("About"),
            h3("Project Background and Motivations"),
            p("Hello, this is my final project on Gun Violence in progress. Right
-             now, I am settling into ways of displaying the various factors on 
+             now, I am settling on ways of displaying the various factors on 
              Gun Violence which I am interested in exploring. I am using one
              such factor, state GDP per capita, as a working test of how to 
-             process and display these reults. It should be noted that the data 
-             currently on the site deals with crime at large and not gun crime. 
-             I do have this data, but have not worked with it yet. x"),
+             process and display these reults."),
            h3("About Me"),
            p("My name is Nosa and I study Comparative Literature. 
              You can reach me at nlawani@college.harvard.edu."),

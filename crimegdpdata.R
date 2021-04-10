@@ -15,7 +15,7 @@ fit_1_plot <- fit1 %>%
   ggplot(aes(x = gdp_id)) +
   geom_histogram(aes(y = after_stat(count / sum(count))), bins = 100) +
   labs(title = "Posterior Probability Distribution for Value of Parameter gdp_id", 
-       subtitle = "Median is -.0187 with MAD_SD of .0058", 
+       subtitle = "Median is -.0187 with a Median SD of .0058", 
        x = "Value for Parameter gdp_id", 
        y = "Probability")
 
