@@ -100,7 +100,7 @@ ui <- navbarPage(
            p("My name is Nosa and I study Comparative Literature. 
              You can reach me at nlawani@college.harvard.edu."),
            h3("Repo Link"),
-           p("https://github.com/lawanin/gov1005-recitation-week-4")))
+           p("https://github.com/lawanin/Towards-Understanding-Gun-Homicide-in-the-50-States")))
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
