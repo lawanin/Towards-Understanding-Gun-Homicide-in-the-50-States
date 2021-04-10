@@ -33,18 +33,40 @@ ui <- navbarPage(
              1 fewer gun death per 100,000 people in the state.")),
   tabPanel("Discussion",
            titlePanel("Potential Sources"),
-           h3("Gun Violence Statistics"),
-           p("The most important part of my project 
-               will involve statistics on gun violence. I found a Wikipedia 
-               tbale which has information on violence in 2015. The source is 
-               the FBI's online summary of Crime in the U.S. This is an anunual
-               report and I have checked and there is a 2019 version. Generally, 
-               I want to avoid 2020 in fear of any anomalies created by the 
-               pandemic. The wikipedia table also has a source for 2013 gun 
-               ownership rates, but the study it linked to seems to have done
-               these caluclations using firearm suicide as a proxy. This sounds
-               dubious to me. Link to Wikipedia page:
-               https://en.wikipedia.org/wiki/Gun_violence_in_the_United_States_by_state#cite_note-4"),
+           h3("Gun Death Statistics"),
+           p("This is the most important data in my project, as I will be estimating
+           how it is influenced by different factos across the 50 states. My source
+           for this has primarily been the annual FBI statistics. In this annual report, 
+           there are data for all crime by state and type, and then data for crime
+           with suppleental info, most importantly with type of weapon, by state 
+           and type. Different states do not report supplemental info for every 
+           crime committed, and so the proportion of homicide deaths with the 
+           weapon specified varies to  homicide deaths in the general crime 
+           statistics vary from year to year and state to state. For states and years
+           where this proportion is greater than 75%, I have used the rate of 
+           gun homicide to homicide to estimate the total gun homicides for those states 
+           and years. In IL for almost every year and AL for some years, the FBI 
+           notes that these states have underreported crimes with supplemental info. 
+           By our 75% standard, a total of 61 states and years were not given 
+           a value for gun homicide per capita, this includes states other 
+           than IL and AL, and some years of these states were representative 
+           enough to be given figures in our method. In every year, Florida was 
+           excluded because its supplemental info was not compliant with FBI 
+           requirements. On the state website for Florida, however, they have their
+           own supplemental info for crime in all years, which have been used to 
+           form the estimates for total gun deaths in this state. More thought 
+           will go into validity of our method of estimation and the effect of 
+           exclusion of these states on representativeness."),
+           h3("States by GDP"),
+           p("This data is from the Buereau of Economic Analysis. I have used their 
+             data of annual Real GDP by state, that is the annual GDP for each state 
+             in 2012 dollars. To obtain the GDP per capita I have used the state
+             population provided for each state and year in the FBI crime 
+             statistics. I have ranked the GDP per capita for each year from 1 to 
+             however many states for which an estimate for gun homicide (vide supra)
+             was able to be made. This is the only dependent variable I have 
+             ranked and analyzed with gun homicide per capita. It serves as a 
+             working model for how I will treat the remainder of my variables."),
            h3("Gun Ownerhsip Statistics"),
            p("Not only is the study cited old, but I really am sketptical of 
                its methodology, though it is apparently not an uncommon one. I 
@@ -57,18 +79,6 @@ ui <- navbarPage(
                This sounds much more trustworthy. Though it was released early in
                2020, so I don't think my COVID fears really apply here.
                Link: https://www.rand.org/pubs/tools/TL354.html"),
-           h3("States by GDP"),
-           p("I found a Wikipedia article with a list of states by their GDP. 
-               It lists states for the third quarter of 2020, but again I am 
-               conerned that data from this time will obscure results because 
-               of impact from COVID. The source is the Bureau of Economic 
-               Analysis, Department of Commerce. They seem to have regular 
-               quarterly reports of this kind. Information on the territories of 
-               the U.S. was gotten from the World Bank, and I don't think I will 
-               be including these in my observation, though I should make sure 
-               other sources of mine do not. I also wonder whether GDP is a better
-               approximation of what I am looking for than income. I will want 
-               to compare the difference between these two in further analysis."),
            h3("Census Data"),
            p("Census Data contains many of the factors I am interested in using
              in these observations: urbanity, race, and possibly, hosuehold income. 
