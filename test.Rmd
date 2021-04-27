@@ -8,25 +8,498 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(rstanarm)
-
+library(tidybayes)
+library(ggdist)
+library(ggthemes) 
+library(plotly)
 ```
 
 ```{r}
-crimegdpfile %>%
-  select(state, gdp_id, gdp_capita) %>% 
-  group_by(state) %>% 
-  summarize(mean_gdp_id = mean(gdp_id), 
-            mean_gdp_capita = mean(gdp_capita)) %>% 
-  arrange(mean_gdp_id) %>% 
-  ggplot(aes(x = mean_gdp_id, mean_gdp_capita)) +
-  geom_col()
+ crimeracefile %>% 
+  ggplot(aes(x = black_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
 
+
+```{r}
+fit_race_plot
+```
+
+
+```{r}
+ crimeparentfile %>% 
+  ggplot(aes(x = single_id, y = big_crime_per_capita)) +
+  geom_point() 
 ```
 ```{r}
-crime_gdp %>% 
+fit_parent_plot
+```
+
+```{r}
+ crimegunfile %>% 
+  ggplot(aes(x = gun_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+
+```{r}
+fit_gun_plot
+```
+```{r}
+crimegdpfile %>% 
   ggplot(aes(x = gdp_id, y = big_crime_per_capita)) +
-  geom_point(alpha = .5) +
-  geom_smooth(method = "lm") 
+  geom_point() 
+```
+
+```{r}
+fit_gdp_plot
+```
+```{r}
+crimegraduationfile %>% 
+  ggplot(aes(x = graduation_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+
+```{r}
+fit_graduation_plot
+```
+
+```{r}
+crimeurbanizedfile %>% 
+  ggplot(aes(x = urbanized_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+```{r}
+fit_urbanized_plot
+```
+
+```{r}
+crimeclusterfile %>% 
+  ggplot(aes(x = urban_cluster_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+
+```{r}
+fit_urban_cluster_plot
+```
+```{r}
+crimenoturbanfile %>% 
+  ggplot(aes(x = noturban_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+
+```{r}
+fit_noturban_plot
+```
+```{r}
+stan_glm()
+```
+
+```{r}
+crimepovertyfile %>% 
+  ggplot(aes(x = poverty_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+```{r}
+fit_poverty
+```
+
+```{r}
+crimereading4file %>% 
+  ggplot(aes(x = reading4_id, y = big_crime_per_capita)) +
+  geom_point() 
+```
+```{r}
+crime_gun %>% 
+  group_by() %>% 
+  summarize(mean(gun),
+            mean(HFR_se))
+```
+```{r}
+all_noreading <- crime_everything %>% 
+  select(-c(scores, reading4_id)) %>% 
+  select(-c(abortionrate1819, abortion_id)) %>% 
+  select(-c(graduation, graduation_id)) %>% 
+  drop_na() 
+  
+
+fit_all<- stan_glm(data = all_noreading, 
+         formula = big_crime_per_capita ~ urban_id + gun_id  + single_id + black_id + poverty_id  + urban_id + black_id*urban_id + black_id*gun_id, 
+         refresh = 0, 
+         seed = 87)
+
+fit_allb<- stan_glm(data = all_noreading, 
+         formula = big_crime_per_capita ~ urban_id + gun_id  + single_id + black_id + poverty_id  + urban_id + single_id*urban_id + single_id*gun_id,
+         refresh = 0, 
+         seed = 87)
+
+fit_allc<- stan_glm(data = all_noreading, 
+         formula = big_crime_per_capita ~ urban_id + gun_id  + single_id + black_id + poverty_id  + urban_id + single_id*urban_id + black_id*gun_id, 
+         refresh = 0, 
+         seed = 87)
+
+fit_alld<- stan_glm(data = all_noreading, 
+         formula = big_crime_per_capita ~ urban_id + gun_id  + single_id + black_id + poverty_id  + urban_id + single_id*urban_id,
+         refresh = 0, 
+         seed = 87)
+
+fit_alle<- stan_glm(data = all_noreading, 
+         formula = big_crime_per_capita ~ urban_id + gun_id  + single_id + black_id + poverty_id  + urban_id + black_id*gun_id, 
+         refresh = 0, 
+         seed = 87)
+
+
+a <- loo(fit_all)
+b <- loo(fit_allb)
+c <- loo(fit_allc)
+d <- loo(fit_alld)
+e <- loo(fit_alle)
+
+print(fit_all, digits = 4)
+print(fit_allb, digits = 4)
+
+loo_compare(a, b, c, d, e)
+
+# newobs <- expand_grid(gun_id = 25, 
+# poverty_id = 25, 
+# black_id = 25, 
+# single_id = c(1, 11, 21, 31, 41, 50),
+# urban_id = c(1, 11, 21, 31, 41, 50)) 
+# 
+# add_fitted_draws(newdata = newobs, 
+#                   model = fit_all) %>% 
+#   mutate(single_id = as.character(single_id)) %>% 
+#   mutate(urban_id = as.character(urban_id)) %>% 
+#   ggplot(aes(x = .value, y = urban_id, fill = single_id)) + 
+#   stat_slab() +
+#   theme_bw() +
+#   labs(title = "Posterior of Gun Deaths in State per Hundred Thousand by Urbanicity and 
+# Proportion of Children with Single Parents", 
+# subtitle = "Increase by Urbanaicity depends much on Proption of Single Parents", 
+# x = "Gun Deaths Per Hundred Thousand", 
+# y = "State Ranking of Urbanicity", 
+# fill = "State Ranking 
+# of Proportion of 
+# Children with 
+# Single Parents")
+# 
+# print(fit_all, digits = 4)
+```
+```{r}
+loo_compare(b, a)
+```
+
+```{r}
+crime_everything <- read_rds("crimeeverythingfile.rds")
+
+all <- crime_everything %>% 
+  drop_na() 
+
+fit_all2 <- stan_glm(data = all,
+         formula = big_crime_per_capita ~ urban_id + graduation_id + single_id + black_id + reading4_id + black_id*urban_id + gun_id*black_id, 
+         refresh = 0, 
+         seed = 87)
+
+fit_all3 <- stan_glm(data = all,
+         formula = big_crime_per_capita ~ graduation_id + black_id + reading4_id + urban_id + single_id + gun_id, 
+         refresh = 0, 
+         seed = 87)
+
+fit_all4 <- stan_glm(data = all,
+         formula = big_crime_per_capita ~ urban_id + graduation_id + single_id + black_id + reading4_id + single_id*urban_id + gun_id*black_id, 
+         refresh = 0, 
+         seed = 87)
+
+fit_all5 <- stan_glm(data = all,
+         formula = big_crime_per_capita ~ urban_id + graduation_id + single_id + black_id + reading4_id + single_id*urban_id,
+         refresh = 0, 
+         seed = 87)
+
+fit_all6 <- stan_glm(data = all,
+         formula = big_crime_per_capita ~ urban_id + graduation_id + single_id + black_id + reading4_id + gun_id*black_id, 
+         refresh = 0, 
+         seed = 87)
+
+print(fit_all3, digits = 4)
+
+a2 <- loo(fit_all2)
+a3 <- loo(fit_all3)
+a4 <- loo(fit_all4)
+a5 <- loo(fit_all5)
+a6 <- loo(fit_all6)
+
+loo_compare(a2, a3, a4, a5, a6)
+```
+```{r}
+rtable
+```
+
+```{r}
+inner_join(crime_weapon, race_all) %>% 
+  filter(variable == "white") %>% 
+  mutate(white_perc = estimate / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(white_perc) %>% 
+  group_by(year) %>% 
+  mutate(white_id = c(1:length(white_perc))) %>% 
+  ggplot(aes(x = white_id, y = big_crime_per_capita)) +
+  geom_point()
+```
+```{r}
+inner_join(crime_weapon, race_all) %>% 
+  filter(variable == "indian") %>% 
+  mutate(indian_perc = estimate / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(indian_perc) %>% 
+  group_by(year) %>% 
+  mutate(indian_id = c(1:length(indian_perc))) %>% 
+  ggplot(aes(x = indian_perc, y = big_crime_per_capita)) +
+  geom_point(aes(x = indian_id, y = big_crime_per_capita))
+```
+
+```{r}
+inner_join(crime_weapon, race_all) %>% 
+  filter(variable == "asian") %>% 
+  mutate(asian_perc = estimate / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(asian_perc) %>% 
+  group_by(year) %>% 
+  mutate(asian_id = c(1:length(asian_perc))) %>% 
+  ggplot(aes(x = asian_perc, y = big_crime_per_capita)) +
+  geom_point(aes(x = asian_id, y = big_crime_per_capita))
+```
+```{r}
+inner_join(crime_weapon, race_all) %>% 
+  filter(variable == "hispanic") %>% 
+  mutate(hispanic_perc = estimate / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(hispanic_perc) %>% 
+  group_by(year) %>% 
+  mutate(hispanic_id = c(1:length(hispanic_perc))) %>% 
+  ggplot(aes(x = hispanic_perc, y = big_crime_per_capita)) +
+  geom_point(aes(x = hispanic_id, y = big_crime_per_capita))
+```
+```{r}
+gun <- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ gun_id,
+         refresh = 0, 
+         seed = 87)
+
+print(gun, digits = 4)
+
+black<- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ black_id,
+         refresh = 0, 
+         seed = 87)
+
+print(black, digits = 4)
+
+poverty<- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ poverty_id,
+         refresh = 0, 
+         seed = 87)
+
+print(poverty, digits = 4)
+
+urban<- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ urban_id,
+         refresh = 0, 
+         seed = 87)
+
+print(urban, digits = 4)
+
+black<- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ black_id,
+         refresh = 0, 
+         seed = 87)
+
+print(black, digits = 4)
+
+graduation <- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ graduation_id,
+         refresh = 0, 
+         seed = 87)
+
+print(graduation, digits = 4)
+
+reading <- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ reading4_id,
+         refresh = 0, 
+         seed = 87)
+
+print(reading, digits = 4)
+
+gdp <- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ gdp_id,
+         refresh = 0, 
+         seed = 87)
+
+print(gdp, digits = 4)
+
+abortion <- stan_glm(data = crime_everything,
+         formula = big_crime_per_capita ~ abortion_id,
+         refresh = 0, 
+         seed = 87)
+
+print(abortion, digits = 4)
+```
+```{r}
+
+suicide <- read_csv("raw_data/suicides/csv2016.csv") %>% 
+  drop_na() %>% 
+  clean_names() %>% 
+  select(-url) %>% 
+  select(-deaths)
+
+suicide
+
+  inner_join(crime_weapon, suicide, by = c("state", "year")) %>% 
+  group_by(year) %>%
+  arrange(rate) %>%
+  mutate(suicide_id = c(1:length(rate))) %>%
+    mutate(big_murder = 100000 * gun_murder_capita) %>% 
+    arrange(year) %>% 
+    ggplot(aes(x = suicide_id, y = big_murder)) +
+    geom_point() +
+    geom_smooth() 
+```
+```{r}
+crime_everything %>% 
+  ggplot(aes(x = urban_id, y = single_id, color = big_crime_per_capita)) +
+  geom_point() 
+```
+```{r}
+abortionall <- read_rds("raw_data/Data set/R/NationalAndStatePregnancy_PublicUse.rds")
+
+crime_abortion15 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionratelt15) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionratelt15))) 
+
+abortion15 <- stan_glm(data = crime_abortion15,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion15, digits = 4)
+
+crime_abortion17 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate1517) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate1517))) 
+
+abortion17 <- stan_glm(data = crime_abortion17,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion17, digits = 4)
+
+crime_abortion19 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate1819) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate1819))) 
+
+abortion19 <- stan_glm(data = crime_abortion19,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion19, digits = 4)
+
+crime_abortion24 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate2024) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate2024))) 
+
+abortion24 <- stan_glm(data = crime_abortion24,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion24, digits = 4)
+
+
+crime_abortion29 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate2529) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate2529))) 
+
+abortion29 <- stan_glm(data = crime_abortion29,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion29, digits = 4)
+
+crime_abortion34 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate3034) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate3034))) 
+
+abortion34 <- stan_glm(data = crime_abortion34,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion34, digits = 4)
+
+crime_abortion39 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate3539) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate3539))) 
+
+abortion39 <- stan_glm(data = crime_abortion39,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion39, digits = 4)
+
+crime_abortion40 <- inner_join(crime_weapon, abortionall, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate40plus) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate40plus))) 
+
+abortion40 <- stan_glm(data = crime_abortion40,
+                       formula = big_crime_per_capita ~ abortion_id,
+                       refresh = 0, 
+                       seed = 87) 
+
+print(abortion40, digits = 4)
+```
+```{r}
+crime_everything %>%
+  select(state, black_id, black_perc) %>% 
+  group_by(state) %>%
+  drop_na() %>% 
+  summarize(mean_black_id = mean(black_id),
+            mean_black_perc = mean(black_perc)) %>%
+  arrange(mean_black_id)
+
+```
+```{r}
+ gun <- crimeeverythingfile %>%
+      ggplot(aes(x = gun_id, y = big_crime_per_capita, 
+                 text = paste("State:", state, "\n",
+                              "Year:", year, "\n", 
+                              sep = ""))) +
+      geom_jitter(alpha = 0.5, 
+                  height = 0.2, 
+                  width = 0.2) + 
+      labs(title = "Gun Deaths by States in Order of Proportion of Gun Owners from 2004-2016", 
+           x = "States in order of Proportion of Gun Owners", 
+           y = "Gun Deaths per 100K",
+           caption = "FBI (2004-2016), RAND (2020)") +
+      scale_x_continuous(breaks = c(1 : 50)) +
+      geom_smooth() 
+    ggplotly(gun, tooltip = "text")
 ```
 

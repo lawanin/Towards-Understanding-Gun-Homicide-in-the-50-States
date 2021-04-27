@@ -3,11 +3,18 @@ library(tidycensus)
 library(readxl)
 library(janitor)
 library(rstanarm)
-options(tigris_use_cache = TRUE)
+library(tidybayes)
+library(gt)
+library(gtsummary)
+library(broom.mixed)
+options(tigris_use_cache = TRUE) 
+
+variables <- load_variables(2016, "acs1")
 
 state_crosswalk <- read_csv("raw_data/state_crosswalk.csv") %>%
   clean_names() %>%
-  mutate(state = tolower(state))
+  mutate(state = tolower(state)) %>% 
+  filter(code != "DC")
 
 racevars <- c(white = "P007003",
               black = "P007004",
@@ -22,6 +29,170 @@ race_census <- get_decennial(geography = "state",
                         year = 2010,
                         geometry = TRUE,
                         summary_var = "P007001")
+# POVERTY 
+
+poverty_acs <- c(below = "B06012_002")
+
+poverty_2016 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2016,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2016) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+
+poverty_2015 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs,
+                        year = 2015,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2015) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2014 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2014,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2014) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2013 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2013,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2013) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2012 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2012,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2012) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2011 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2011,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2011) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2010 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2010,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2010) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2009 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2009,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2009) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2008 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2008,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2008) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2007 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2007,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2007) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2006 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2006,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2006) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_2005 <- get_acs(geography = "state", 
+                        survey = "acs1", 
+                        variables = poverty_acs, 
+                        year = 2005,
+                        geometry = FALSE, 
+                        summary_var = "B06012_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2005) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev", "GEOID")) %>%
+  rename(state = code) 
+
+poverty_all <- bind_rows(poverty_2005, poverty_2006, poverty_2007, poverty_2008, poverty_2009, poverty_2010, poverty_2011, poverty_2012, poverty_2013, poverty_2014, poverty_2015, poverty_2016)
+
+# RACE 
 
 racevars_acs <- c(white = "B03002_003",
               black = "B03002_004",
@@ -30,13 +201,465 @@ racevars_acs <- c(white = "B03002_003",
               pacific_islander = "B03002_007",
               some_other = "B03002_008",
               mixed = "B03002_009",
-              hispanic = "B03002_012")
+              hispanic = "B03002_012") 
 
-race_acs <- get_acs(geography = "state",
+
+race_2016 <- get_acs(geography = "state",
+                     survey = "acs1",
                     variables = racevars_acs,
                     year = 2016,
-                    geometry = TRUE,
-                    summary_var = "B03002_001")
+                    geometry = FALSE,
+                    summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2016) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2015 <- get_acs(geography = "state",
+                     survey = "acs1",
+                    variables = racevars_acs,
+                    year = 2015,
+                    geometry = FALSE,
+                    summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2015) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2014 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2014,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2014) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2013 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2013,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2013) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2012 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2012,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2012) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2011 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2011,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2011) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2010 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2010,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2010) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2009 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2009,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2009) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2008 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2008,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2008) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2007 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2007,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2007) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2006 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2006,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2006) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_2005 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = racevars_acs,
+                     year = 2005,
+                     geometry = FALSE,
+                     summary_var = "B03002_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2005) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+race_all <- bind_rows(race_2005, race_2006, race_2007, race_2008, race_2009, race_2010, race_2011, race_2012, race_2013, race_2014, race_2015, race_2016)
+
+# SINGLE PARENT
+
+parent_acs <- c(single_6 = "B05009_013",
+                single_18 = "B05009_031") 
+
+parent_oldacs <- c(single_6 = "B23008_008",
+                   single_18 = "B23008_015") 
+
+parent_2016 <- get_acs(geography = "state",
+                     survey = "acs1",
+                     variables = parent_acs,
+                     year = 2016,
+                     geometry = FALSE,
+                     summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2016) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2015 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2015,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2015) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2014 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2014,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2014) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2013 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2013,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2013) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2012 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2012,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2012) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2011 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2011,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2011) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2010 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2010,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2010) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2009 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2009,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2009) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2008 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2008,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2008) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2007 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_acs,
+                       year = 2007,
+                       geometry = FALSE,
+                       summary_var = "B05009_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2007) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2006 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_oldacs,
+                       year = 2006,
+                       geometry = FALSE,
+                       summary_var = "B23008_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2006) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_2005 <- get_acs(geography = "state",
+                       survey = "acs1",
+                       variables = parent_oldacs,
+                       year = 2005,
+                       geometry = FALSE,
+                       summary_var = "B23008_001") %>% 
+  rename(state = NAME) %>% 
+  mutate(year = 2005) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) 
+
+parent_all <- bind_rows(parent_2005, parent_2006, parent_2007, parent_2008, parent_2009, parent_2010, parent_2011, parent_2012, parent_2013, parent_2014, parent_2015, parent_2016) %>% 
+  select(-moe) %>% 
+  pivot_wider(names_from = variable, 
+              values_from = estimate) %>% 
+  mutate(single = single_6 + single_18) 
+
+#READING SCORES 
+
+grade4_real <- read_csv("raw_data/grade_4.csv") %>% 
+  na_if("—") %>%
+  na_if("‡") %>% 
+  drop_na() %>% 
+  clean_names() %>% 
+  filter(!(year == "2000")) %>% 
+  filter(!(year == "2000¹")) %>% 
+  filter(!(year == "1998")) %>% 
+  mutate(year = str_replace_all(year, "¹", "")) %>% 
+  mutate(year = as.numeric(year)) %>%
+  rename(state = jurisdiction) %>% 
+  rename(scores = average_scale_score) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>%
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>%
+  select(year, state, scores) %>%
+
+# YEAR FOURTH GRADERS ARE MOST LIKELY TO BE MURDERERS
+
+  mutate(year = year + 14) %>%
+  mutate(scores = as.numeric(scores))
+
+grade4_minus <- read_csv("raw_data/grade_4.csv") %>% 
+  na_if("—") %>%
+  na_if("‡") %>% 
+  drop_na() %>% 
+  clean_names() %>% 
+  filter(!(year == "2000")) %>% 
+  filter(!(year == "2000¹")) %>% 
+  filter(!(year == "1998")) %>% 
+  mutate(year = str_replace_all(year, "¹", "")) %>% 
+  mutate(year = as.numeric(year)) %>%
+  rename(state = jurisdiction) %>% 
+  rename(scores = average_scale_score) %>% 
+  mutate(state = tolower(state)) %>%
+  inner_join(state_crosswalk) %>%
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>%
+  select(year, state, scores) %>% 
+  
+  # ADJUSTING YEAR
+  
+  mutate(year = year + 14) %>%
+  mutate(year = year -1) %>% 
+  mutate(scores = as.numeric(scores))
+
+grade4_minus2 <- read_csv("raw_data/grade_4.csv") %>% 
+  na_if("—") %>%
+  na_if("‡") %>% 
+  drop_na() %>% 
+  clean_names() %>% 
+  filter(!(year == "2000")) %>% 
+  filter(!(year == "2000¹")) %>% 
+  filter(!(year == "1998")) %>% 
+  mutate(year = str_replace_all(year, "¹", "")) %>% 
+  mutate(year = as.numeric(year)) %>%
+  rename(state = jurisdiction) %>% 
+  rename(scores = average_scale_score) %>% 
+  mutate(state = tolower(state)) %>%
+  inner_join(state_crosswalk) %>%
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>%
+  select(year, state, scores) %>% 
+  
+  # ADJUSTING YEAR
+  
+  mutate(year = year + 14) %>%
+  mutate(year = year -2) %>% 
+  mutate(scores = as.numeric(scores)) %>% 
+  filter(year %in% c(2004, 2010, 2014))
+
+grade4_plus1 <- read_csv("raw_data/grade_4.csv") %>% 
+  na_if("—") %>%
+  na_if("‡") %>% 
+  drop_na() %>% 
+  clean_names() %>% 
+  filter(!(year == "2000")) %>% 
+  filter(!(year == "2000¹")) %>% 
+  filter(!(year == "1998")) %>% 
+  mutate(year = str_replace_all(year, "¹", "")) %>% 
+  mutate(year = as.numeric(year)) %>%
+  rename(state = jurisdiction) %>% 
+  rename(scores = average_scale_score) %>% 
+  mutate(state = tolower(state)) %>%
+  inner_join(state_crosswalk) %>%
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>%
+  select(year, state, scores) %>% 
+  
+  # ADJUSTING YEAR
+  
+  mutate(year = year + 14) %>%
+  mutate(year = year + 1) %>% 
+  mutate(scores = as.numeric(scores)) %>% 
+  filter(year %in% c(2009, 2013))
+
+grade4 <- bind_rows(grade4_real, grade4_minus, grade4_minus2, grade4_plus1)
+
+
+#GRADUATION RATE
+
+graduation <- read_xls("raw_data/graduation.xls", skip = 1, col_types = "text") %>% 
+  rename(state = `State or jurisdiction`) %>% 
+  filter(!(state == "1")) %>% 
+  mutate(state = str_replace_all(state, "\\.", "")) %>% 
+  mutate(state = trimws(state)) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>% 
+  select(-c("...11", "...14", "...17", "...19", "...21")) %>% 
+  pivot_longer(cols = -state, 
+               names_to = c("year", "discard"),
+               names_sep = "-", 
+               values_to = "graduation") %>% 
+  select(-discard) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  mutate(graduation = as.numeric(graduation)) %>% 
+  
+# YEAR IN WHICH GRADUATES WILL BE MOST LIKELY TO BE MURDERERS
+  
+  mutate(year = year + 6)
+
+
+# URBAN
 
 vars_urban <- c(urbanized = "H002003",
                 urban_cluster = "H002004",
@@ -46,9 +669,15 @@ vars_urban <- c(urbanized = "H002003",
 urban <- get_decennial(geography = "state",
                        variables = vars_urban,
                        year = 2010,
-                       geometry = TRUE,
-                       summary_var = "H002001")
-
+                       geometry = FALSE,
+                       summary_var = "H002001") %>% 
+  rename(state = NAME) %>% 
+  mutate(state = tolower(state)) %>% 
+  inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>% 
+  filter(state != "DC")
+  
 #FBI CRIME
 
 crime_2016 <- read_excel("raw_data/fbi/fbi_primary/crime_2016.xls", skip = 3) %>%
@@ -436,15 +1065,18 @@ crime_weapon <- left_join(crime_all, weapon_all, by = c("state", "year")) %>%
   mutate(gun_murder_capita = gun_murder / population)
 
 
-murder_weapon <- read_excel("raw_data/fbi/primary/table-12.xls", skip = 3)
-
-robbery_weapon <- read_excel("raw_data/fbi/primary/table-13.xls", skip = 3)
-
-assault_weapon <- read_excel("raw_data/fbi/primary/table-14.xls", skip = 3)
+# GUN OWNERSHIP
 
 gun_ownership <- read_excel("raw_data/rand/TL-354-State-Level Estimates of Household Firearm Ownership.xlsx",
                             sheet = 2) %>%
-  select(Year:HFR_se)
+  select(Year:HFR_se) %>% 
+  rename(state = STATE) %>% 
+  mutate(state = tolower(state)) %>% 
+  rename(gun = HFR) %>% 
+   inner_join(state_crosswalk) %>% 
+  select(-c("state", "abbrev")) %>%
+  rename(state = code) %>% 
+  rename(year = Year)
 
 # Annaual GDP for all states from 1997 to 2020 in 2012 dollars
 state_gdp <- read_csv("raw_data/bea/gdp_state/gdp_1997_2020.csv", skip = 4) %>% 
@@ -482,23 +1114,263 @@ state_income <- read_csv("raw_data/bea/income_state/SA27N_1998_2016__ALL_AREAS.c
 # Graph with Variable representing ratio of gdp/per capita to cime per capita.
 # Essentially the same as dividing gdp by crime, but this feels better.
 
+abortion <- read_rds("raw_data/Data set/R/NationalAndStatePregnancy_PublicUse.rds") %>% 
+  select(state, year, abortionrate2024) 
+
+crime_abortion <- inner_join(crime_weapon, abortion, by = c("state", "year")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(abortionrate2024) %>% 
+  group_by(year) %>% 
+  mutate(abortion_id = c(1:length(abortionrate2024))) 
+
 crime_gdp <- inner_join(crime_weapon, state_gdp, by = c("state", "year")) %>%
-  mutate(gdp_capita = gdp / population) %>%
+  mutate(gdp_capita = 1000 * gdp / population) %>%
   mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
   arrange(gdp_capita) %>% 
   group_by(year) %>% 
-  mutate(gdp_id = c(1:length(gdp)))
+  mutate(gdp_id = c(1:length(gdp))) 
 
+crime_poverty <- inner_join(crime_weapon, poverty_all) %>% 
+  mutate(poverty_perc = estimate / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(poverty_perc) %>% 
+  group_by(year) %>% 
+  mutate(poverty_id = c(1:length(poverty_perc))) %>% 
+  select(-c(variable, estimate, summary_est, summary_moe, moe))
+
+crime_race <- inner_join(crime_weapon, race_all) %>% 
+  filter(variable == "black") %>% 
+  mutate(black_perc = estimate / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(black_perc) %>% 
+  group_by(year) %>% 
+  mutate(black_id = c(1:length(black_perc))) %>% 
+  select(-c(variable, estimate, summary_est, summary_moe, moe))
+
+crime_parent <- inner_join(crime_weapon, parent_all) %>% 
+  mutate(single_perc = single / population) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(single_perc) %>% 
+  group_by(year) %>% 
+  mutate(single_id = c(1:length(single_perc)))  %>% 
+  select(-c(summary_est, summary_moe))
+
+crime_gun <- inner_join(crime_weapon, gun_ownership, by = c("year", "state")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(gun) %>% 
+  group_by(year) %>% 
+  mutate(gun_id = c(1:length(gun))) 
+
+crime_graduation <- inner_join(crime_weapon, graduation, by = c("year", "state")) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(graduation) %>% 
+  group_by(year) %>% 
+  mutate(graduation_id = c(1:length(graduation))) 
+
+crime_reading4 <- inner_join(crime_weapon, grade4) %>% 
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
+  arrange(scores) %>% 
+  group_by(year) %>% 
+  mutate(reading4_id = c(1:length(scores))) 
+
+crime_urbanized <- inner_join(crime_weapon, urban, by = "state") %>% 
+  filter(variable == "urbanized") %>% 
+  mutate(urbanized_perc = value / summary_value) %>%
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>%
+  arrange(urbanized_perc) %>%
+  group_by(year) %>%
+  mutate(urbanized_id = c(1:length(value))) %>% 
+  select(-c(variable, value, summary_value))
+
+crime_cluster <- inner_join(crime_weapon, urban, by = "state") %>% 
+  filter(variable == "urban_cluster") %>% 
+  mutate(urban_cluster_perc = value / summary_value) %>%
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>%
+  arrange(urban_cluster_perc) %>%
+  group_by(year) %>%
+  mutate(urban_cluster_id = c(1:length(value))) %>% 
+  select(-c(variable, value, summary_value))
+
+crime_urban <- inner_join(crime_weapon, urban, by = "state") %>% 
+  filter(variable == "rural") %>% 
+  mutate(urban_perc = value / summary_value) %>%
+  mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>%
+  arrange(desc(urban_perc)) %>%
+  group_by(year) %>%
+  mutate(urban_id = c(1:length(value))) %>% 
+  select(-c(variable, value, summary_value))
+
+crime_everything <- left_join(crime_urban, crime_cluster) %>% 
+  left_join(crime_urbanized) %>% 
+  left_join(crime_graduation) %>% 
+  left_join(crime_gun) %>% 
+  left_join(crime_parent) %>% 
+  left_join(crime_race) %>% 
+  left_join(crime_gdp) %>% 
+  left_join(crime_abortion) %>% 
+  left_join(crime_reading4) %>% 
+  left_join(crime_poverty)
+
+all_noreading <- crime_everything %>% 
+  select(-c(scores, reading4_id)) %>% 
+  select(-c(abortionrate2024, abortion_id)) %>% 
+  select(-c(graduation, graduation_id)) %>% 
+  drop_na() 
+
+all <- crime_everything %>% 
+  drop_na() 
+
+write_rds(crime_everything, "crimeeverythingfile.rds")
+
+write_rds(crime_abortion, "crimeabortionfile.rds")
+  
 write_rds(crime_gdp, "crimegdpfile.rds")
-crimegdpfile <- read_rds("crimegdpfile.rds")
+
+write_rds(crime_poverty, "crimepovertyfile.rds")
+
+write_rds(crime_race, "crimeracefile.rds")
+
+write_rds(crime_parent, "crimeparentfile.rds")
+
+write_rds(crime_gun, "crimegunfile.rds")
+
+write_rds(crime_reading4, "crimereading4file.rds")
+
+write_rds(crime_graduation, "crimegraduationfile.rds")
+
+write_rds(crime_urbanized, "crimeurbanizedfile.rds")
+
+write_rds(crime_cluster, "crimeclusterfile.rds")
+
+write_rds(crime_urban, "crimeurbanfile.rds")
 
 
-fit_1 <- stan_glm(data = crimegdpfile, 
-                  formula = big_gun_per_capita ~ gdp_id, 
+fit_abortion <- stan_glm(data = crime_abortion, 
+                    formula = big_crime_per_capita ~ abortion_id, 
+                    refresh = 0, 
+                    seed = 87) 
+
+fit_gdp <- stan_glm(data = crime_gdp, 
+                  formula = big_crime_per_capita ~ gdp_id, 
                   refresh = 0, 
-                  seed = 87) %>% 
+                  seed = 87) 
 
-write_rds(fit_1, "fit1.rds")
+fit_poverty <- stan_glm(data = crime_poverty, 
+                     formula = big_crime_per_capita ~ poverty_id, 
+                     refresh = 0, 
+                     seed = 87) 
+  
+fit_race <- stan_glm(data = crime_race, 
+                      formula = big_crime_per_capita ~ black_id, 
+                      refresh = 0, 
+                      seed = 87) 
+
+fit_parent <- stan_glm(data = crime_parent, 
+                     formula = big_crime_per_capita ~ single_id, 
+                     refresh = 0, 
+                     seed = 87) 
+
+fit_gun <- stan_glm(data = crime_gun, 
+                     formula = big_crime_per_capita ~ gun_id, 
+                     refresh = 0, 
+                     seed = 87) 
+
+fit_reading4 <- stan_glm(data = crime_reading4, 
+                    formula = big_crime_per_capita ~ reading4_id, 
+                    refresh = 0, 
+                    seed = 87) 
+
+fit_graduation <- stan_glm(data = crime_graduation, 
+                    formula = big_crime_per_capita ~ graduation_id, 
+                    refresh = 0, 
+                    seed = 87) 
+
+fit_urbanized <- stan_glm(data = crime_urbanized, 
+                    formula = big_crime_per_capita ~ urbanized_id, 
+                    refresh = 0, 
+                    seed = 87) 
+
+fit_cluster <- stan_glm(data = crime_cluster, 
+                    formula = big_crime_per_capita ~ urban_cluster_id, 
+                    refresh = 0, 
+                    seed = 87) 
+
+fit_urban <- stan_glm(data = crime_urban, 
+                        formula = big_crime_per_capita ~ urban_id, 
+                        refresh = 0, 
+                        seed = 87) 
+
+fit_final <- stan_glm(data = all_noreading, 
+                   formula = big_crime_per_capita ~ urban_id + gun_id  + single_id + black_id + poverty_id  + urban_id + single_id*urban_id, 
+                   refresh = 0, 
+                   seed = 87) 
+
+
+fit_alt <- stan_glm(data = all,
+                     formula = big_crime_per_capita ~ graduation_id + black_id + reading4_id + urban_id + single_id + gun_id, 
+                     refresh = 0, 
+                     seed = 87)
+
+
+newobs <- expand_grid(gun_id = 25, 
+                      poverty_id = 25, 
+                      black_id = 25, 
+                      single_id = c(1, 11, 21, 31, 41, 50),
+                      urban_id = c(1, 11, 21, 31, 41, 50)) 
+
+fit_model <- add_fitted_draws(newdata = newobs, 
+                                     model = fit_final) 
+
+regression_table <- as_gt(tbl_regression(fit_final, intercept = TRUE, estimate_fun = function(x) style_sigfig(x, digits = 4)) %>% 
+                            modify_header(estimate = "**Paramter**")) %>% 
+  tab_header(title = md("**Influence of 
+                        Gun Deaths in a State per 1OOK**"), 
+             subtitle = "How Rankings of Urbanicity, Gun Ownership, 
+Proportion of Children with Single Parents, 
+Proportion of Blacks, and Proportion of Poor 
+are correlated with likelihood of Voting") %>% 
+  tab_source_note("Sources: U.S. Census, American Community Survey (2005-2016), RAND (2020)")
+
+regression_table_alt <- as_gt(tbl_regression(fit_alt, intercept = TRUE, estimate_fun = function(x) style_sigfig(x, digits = 4)) %>% 
+                            modify_header(estimate = "**Paramter**")) %>% 
+  tab_header(title = md("**Influence of 
+                        Gun Deaths in a State per 1OOK**"), 
+             subtitle = "How Rankings of Urbanicity, Gun Ownership, 
+Proportion of Children with Single Parents, 
+Proportion of Blacks, and Proportion of Poor,
+4th Grade Reading Scores and Averaged Freshman 
+Graduation Rate are correlated with likelihood of Voting") %>% 
+  tab_source_note("Sources: U.S. Census, American Community Survey (2005-2016), RAND (2020)")
+
+
+write_rds(fit_abortion, "fitabortion.rds")
+
+write_rds(fit_gdp, "fitgdp.rds")
+
+write_rds(fit_poverty, "fitpoverty.rds")
+
+write_rds(fit_race, "fitrace.rds")
+
+write_rds(fit_parent, "fitparent.rds")
+
+write_rds(fit_gun, "fitgun.rds")
+
+write_rds(fit_reading4, "fitreading4.rds")
+
+write_rds(fit_graduation, "fitgraduation.rds")
+
+write_rds(fit_urbanized, "fiturbanized.rds")
+
+write_rds(fit_cluster, "fitcluster.rds")
+
+write_rds(fit_urban, "fiturban.rds")
+
+write_rds(regression_table, "regressiontable.rds")
+
+write_rds(regression_table_alt, "regressiontablealt.rds")
+
+write_rds(fit_model, "fitmodel.rds")
+
 
 
 
