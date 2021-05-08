@@ -1,9 +1,10 @@
 crimeeverythingfile <- read_rds("crimeeverythingfile.rds") 
+crimefullfile <- read_rds("crimefullfile.rds")
 
 gun_order <- crimeeverythingfile %>%
-  drop_na() %>% 
   select(state, gun_id, gun) %>% 
   group_by(state) %>% 
+  drop_na() %>% 
   summarize(mean_gun_id = mean(gun_id), 
             mean_gun_ownership_rate = round(mean(gun), digits = 3)) %>% 
   arrange(mean_gun_id)
@@ -50,11 +51,13 @@ reading4_order <- crimeeverythingfile %>%
 
 graduation_order <- crimeeverythingfile %>%
   select(state, graduation_id, graduation) %>% 
+  filter(year != 2004) %>% 
   drop_na() %>% 
   group_by(state) %>% 
-  summarize(mean_graduation_id = mean(graduation_id), 
-            mean_graduation_rate = round(mean(graduation), digits = 3)) %>% 
+  summarize(mean_graduation_id = mean(graduation_id),
+            mean_graduation_score = round(mean(graduation), digits = 3)) %>% 
   arrange(mean_graduation_id)
+
 
 gdp_order <- crimeeverythingfile %>%
   select(state, gdp_id, gdp_capita) %>% 
@@ -71,3 +74,10 @@ abortion_order <- crimeeverythingfile %>%
   summarize(mean_abortion_id = mean(abortion_id), 
             mean_abortion_rate = round(mean(abortionrate2024), digits = 3)) %>% 
   arrange(mean_abortion_id)
+
+missing_states <- crimefullfile  %>% 
+  filter(good_prop == FALSE) %>% 
+  select(state, year, prop_supplement) %>% 
+  mutate(prop_supplement = round(prop_supplement, digits = 3)) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  arrange(year)

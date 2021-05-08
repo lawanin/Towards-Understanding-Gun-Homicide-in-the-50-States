@@ -215,11 +215,11 @@ fit_all5 <- stan_glm(data = all,
          seed = 87)
 
 fit_all6 <- stan_glm(data = all,
-         formula = big_crime_per_capita ~ urban_id + graduation_id + single_id + black_id + reading4_id + gun_id*black_id, 
+         formula = big_crime_per_capita ~ poverty_id + black_id  + gun_id +  urban_id*single_id, 
          refresh = 0, 
          seed = 87)
 
-print(fit_all3, digits = 4)
+print(fit_all2, digits = 4)
 
 a2 <- loo(fit_all2)
 a3 <- loo(fit_all3)
@@ -501,5 +501,38 @@ crime_everything %>%
       scale_x_continuous(breaks = c(1 : 50)) +
       geom_smooth() 
     ggplotly(gun, tooltip = "text")
+```
+
+```{r}
+crime_everything <- read_rds("crimeeverythingfile.rds")
+
+crime_everything
+```
+
+```{r}
+crime_abortion
+```
+```{r}
+black_order
+```
+
+```{r}
+crime_gun %>% 
+  filter(year != 2004)
+```
+
+```{r}
+left_join(crime_all, weapon_all, by = c("state", "year")) %>% 
+  mutate(population = as.numeric(population)) %>% 
+  mutate(prop_supplement = total_murders / murder_and_nonnegligent_manslaughter) %>% 
+  mutate(good_prop = ifelse(prop_supplement <= .75, FALSE, TRUE)) %>% 
+  mutate(great_prop = ifelse(prop_supplement > .95, TRUE, FALSE)) %>% 
+  filter(good_prop == TRUE) %>%
+  mutate(gun_murder = murder_and_nonnegligent_manslaughter * prop_firearm) %>% 
+  mutate(gun_murder_capita = gun_murder / population)
+```
+
+```{r}
+missing_states
 ```
 

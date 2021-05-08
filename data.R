@@ -687,7 +687,7 @@ crime_2016 <- read_excel("raw_data/fbi/fbi_primary/crime_2016.xls", skip = 3) %>
   mutate(state = tolower(state)) %>%
   select(-c("x3", "x15", "x16")) %>%
 
-  # removing footnotes
+  # removing footnotes, this technique is used hereafter. See "data_notes" for info on some footnoes.
 
    mutate(state = str_replace(string = state, pattern = "5", replacement = "")) %>%
    mutate(state = str_replace(string = state, pattern = "6", replacement = "")) %>%
@@ -1031,6 +1031,9 @@ weapon_2004 <- read_excel("raw_data/fbi/fbi_primary/weapon_2004.xls", skip = 4) 
   mutate(prop_firearm = total_firearms / total_murders) %>%  
   mutate(year = 2004)
 
+# Florida does not provide supplementary info in a format acceptable 
+# to the FBI data. Taken directly from Florida state website.
+
 weapon_florida <- read_excel("raw_data/weapon_florida.xlsx", skip = 4) %>% 
   clean_names() %>% 
   select(year, total_offenses, firearm) %>% 
@@ -1051,6 +1054,7 @@ weapon_all <- bind_rows(weapon_2016, weapon_2015, weapon_2014, weapon_2013, weap
           weapon_2011, weapon_2010, weapon_2009, weapon_2008, weapon_2007, 
           weapon_2006, weapon_2005, weapon_2004, weapon_florida)
 
+
 # Combined crime and weapons. For now, we will use any row whose supplemental
 # contains at least 75% of the main crime tally to caluclate a gun death per 
 # capita
@@ -1064,6 +1068,15 @@ crime_weapon <- left_join(crime_all, weapon_all, by = c("state", "year")) %>%
   mutate(gun_murder = murder_and_nonnegligent_manslaughter * prop_firearm) %>% 
   mutate(gun_murder_capita = gun_murder / population)
 
+# No good prop in order to make missing table. 
+
+crime_full <- left_join(crime_all, weapon_all, by = c("state", "year")) %>% 
+  mutate(population = as.numeric(population)) %>% 
+  mutate(prop_supplement = total_murders / murder_and_nonnegligent_manslaughter) %>% 
+  mutate(good_prop = ifelse(prop_supplement > .75, TRUE, FALSE)) %>% 
+  mutate(great_prop = ifelse(prop_supplement > .95, TRUE, FALSE)) %>% 
+  mutate(gun_murder = murder_and_nonnegligent_manslaughter * prop_firearm) %>% 
+  mutate(gun_murder_capita = gun_murder / population)
 
 # GUN OWNERSHIP
 
@@ -1078,7 +1091,8 @@ gun_ownership <- read_excel("raw_data/rand/TL-354-State-Level Estimates of House
   rename(state = code) %>% 
   rename(year = Year)
 
-# Annaual GDP for all states from 1997 to 2020 in 2012 dollars
+# Annaual GDP for all states from 1997 to 2020 in 2012 dollars"
+
 state_gdp <- read_csv("raw_data/bea/gdp_state/gdp_1997_2020.csv", skip = 4) %>% 
   pivot_longer(cols = `1997`:`2020`, 
                names_to = "year", 
@@ -1097,6 +1111,7 @@ state_gdp <- read_csv("raw_data/bea/gdp_state/gdp_1997_2020.csv", skip = 4) %>%
 # Annual GDP for all states from 1995 to 1997 in 1997 dollars, converted to 2012
 # dollars using the shared value of 1997. Simple Conversion was not successful, 
 # may ignore
+
 old_gdp <- read_csv("raw_data/bea/gdp_state/gdp_1995_1997.csv", skip = 4) %>% 
   pivot_longer(cols = `1995`:`1997`, 
                names_to = "year",
@@ -1111,11 +1126,11 @@ old_gdp <- read_csv("raw_data/bea/gdp_state/gdp_1995_1997.csv", skip = 4) %>%
 
 state_income <- read_csv("raw_data/bea/income_state/SA27N_1998_2016__ALL_AREAS.csv")
 
-# Graph with Variable representing ratio of gdp/per capita to cime per capita.
-# Essentially the same as dividing gdp by crime, but this feels better.
-
 abortion <- read_rds("raw_data/Data set/R/NationalAndStatePregnancy_PublicUse.rds") %>% 
   select(state, year, abortionrate2024) 
+
+# Combine each variable with a crime graph, relic of old system but may be used in
+# "test.Rmd" so left here. 
 
 crime_abortion <- inner_join(crime_weapon, abortion, by = c("state", "year")) %>% 
   mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>% 
@@ -1173,6 +1188,10 @@ crime_reading4 <- inner_join(crime_weapon, grade4) %>%
   group_by(year) %>% 
   mutate(reading4_id = c(1:length(scores))) 
 
+# Urbanized and cluster are different Census measures of urbanity I have added
+# both to get the urban population used in my analysis. Interestingly, 
+# gun death fits a negative correlation with gun homicide.
+
 crime_urbanized <- inner_join(crime_weapon, urban, by = "state") %>% 
   filter(variable == "urbanized") %>% 
   mutate(urbanized_perc = value / summary_value) %>%
@@ -1211,6 +1230,9 @@ crime_everything <- left_join(crime_urban, crime_cluster) %>%
   left_join(crime_reading4) %>% 
   left_join(crime_poverty)
 
+# Variables which are not used in the regression are removed. These include both of our 
+# varibales with missing values.
+
 all_noreading <- crime_everything %>% 
   select(-c(scores, reading4_id)) %>% 
   select(-c(abortionrate2024, abortion_id)) %>% 
@@ -1219,6 +1241,11 @@ all_noreading <- crime_everything %>%
 
 all <- crime_everything %>% 
   drop_na() 
+
+# An RDS for each is a relic of old set up with R scripts. These files have not been uploaded to github,
+# but are included as potentially useful. 
+
+write_rds(crime_full, "crimefullfile.rds")
 
 write_rds(crime_everything, "crimeeverythingfile.rds")
 
@@ -1243,6 +1270,7 @@ write_rds(crime_urbanized, "crimeurbanizedfile.rds")
 write_rds(crime_cluster, "crimeclusterfile.rds")
 
 write_rds(crime_urban, "crimeurbanfile.rds")
+
 
 
 fit_abortion <- stan_glm(data = crime_abortion, 
@@ -1320,6 +1348,7 @@ newobs <- expand_grid(gun_id = 25,
 
 fit_model <- add_fitted_draws(newdata = newobs, 
                                      model = fit_final) 
+# Rgression table for fit on Shiny App.
 
 regression_table <- as_gt(tbl_regression(fit_final, intercept = TRUE, estimate_fun = function(x) style_sigfig(x, digits = 4)) %>% 
                             modify_header(estimate = "**Paramter**")) %>% 
@@ -1330,6 +1359,8 @@ Proportion of Children with Single Parents,
 Proportion of Blacks, and Proportion of Poor 
 are correlated with likelihood of Voting") %>% 
   tab_source_note("Sources: U.S. Census, American Community Survey (2005-2016), RAND (2020)")
+
+# Regression table for alternate fit not yet included in Shiny App
 
 regression_table_alt <- as_gt(tbl_regression(fit_alt, intercept = TRUE, estimate_fun = function(x) style_sigfig(x, digits = 4)) %>% 
                             modify_header(estimate = "**Paramter**")) %>% 
@@ -1342,6 +1373,8 @@ Proportion of Blacks, and Proportion of Poor,
 Graduation Rate are correlated with likelihood of Voting") %>% 
   tab_source_note("Sources: U.S. Census, American Community Survey (2005-2016), RAND (2020)")
 
+# An RDS for each is a relic of old set up with R scripts. These files have not been uploaded to github,
+# but are included as potentially useful. 
 
 write_rds(fit_abortion, "fitabortion.rds")
 

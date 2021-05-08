@@ -37,7 +37,7 @@ ui <- navbarPage(
            p("Looking vertically at any one color, in states of increased  
 ranking of urbanicity one observes an increase in gun deaths. Looking across any one 
 row, one also observes an increase in gun deaths in states of increased single parenthood.
-However, the rate of increase. These independent rates of increase, however, interact with 
+These independent rates of increase also interact with 
 one another to produce a greater overall increase. When comparing the row with 
 urbanicity of rank 1 to that of urbanicity of rank 50, one sees that the increase
 due to increasing ranks of single parenthood in row 1 is much lower than it is 
@@ -107,16 +107,19 @@ insignificant and possibly 0, as we can see from the 95% Confidence Interval."),
              who seek to protect themselves in dangerous areas, or dangerous people 
              who bring guns into their areas) as a function of gun violence?"))),
   tabPanel("Data",
-           mainPanel(h2("Gun Deaths and Factors"),
+           mainPanel(h2("Gun Deaths and Variables"),
                      p("On this page are plots of most of the variables examined,
                        including those not in the model, ranked and plotted against
                        gun deaths per 100K. No plot in any year will have data for 
                        a full 50 states, due first to limitations in FBI crime data
-                       containing the supplementary information of weapons, and 
-                       second to varied limitations in the data sets of the factors.
-                       See the about page for details. For the time being, this page
-                       provides the most comprehensive information on the source
-                       and method of dealing with the data sets of each factor.")), 
+                       containing the supplementary information of weapons, and,
+                       in two cases, to limitations within the data sets of the variables
+                       See the 'About' page for details on FBI crime data and the 'Tables'
+                       for lapses in individual data sets. An estimate of the slope
+                       of the linear regression from a linear model of each graph
+                       is given in bold. This value is not represented on the graphs, 
+                       but it is included as a crude means of quantitatively
+                       comparing graphs.")), 
   mainPanel(h3("Gun Deaths and Gun Ownership"),
              p("Plotted are gun deaths against states ranked by gun 
              ownership. Each ranking is determined by comparison with the 50 states 
@@ -275,14 +278,13 @@ insignificant and possibly 0, as we can see from the 95% Confidence Interval."),
             p("Plotted are gun deaths against states ranked by the rate (abortions / women) of abortions
                      among women aged 20-24. Each ranking is determined by comparison 
                      with the 50 states in a given year. The data for abortion rates are 
-                     based on estimates from the Guttmacher Institute. The age 20-24 displayed
+                     based on estimates from the Guttmacher Institute. The age 18-19 displayed
                      the strongest positive correlation, though neighboring age groups
                      yield similar values. The most notable exceptions are at the extremes, 
                      for women 40+ the best estimate for the slope of the linear fit is
                      only .066, and for women under 15, this value is -.0111. Calculation of a linear
-                     fit of these data, yields a best estimate of", 
-              strong(".0318"), "for the slope, with a 95% confidence interval 
-                     between .0210 and .0426. Below is a plot in which one can 
+                     fit of these data, yields a best estimate of", strong(".0318"),
+              "with a 95% congidence interval between .0210 and .0426.Below is a plot in which one can 
                      view each year's set of rankings individually."),
             plotOutput("abortiongraph")),
   mainPanel(plotlyOutput("abortiongraphfiltered"),
@@ -292,6 +294,15 @@ insignificant and possibly 0, as we can see from the 95% Confidence Interval."),
                         sep = "")),
            ),
   tabPanel("Tables",
+           mainPanel(h2("States by Average Variable Ownership Ranking and Average Variable"),
+                     p(strong("Below find a table of states whose crimes with weapons data
+                     has been determined too unrepresentative to be used in our analysis."),
+                     "Despite the limits of the FBI crime data, every year is represented
+                     at least once between the years 2005 and 2016. Accordingly, 
+                     there should be 50 rows for each of the tables if the variable
+                     data set was complete. For those in which there are fewer than
+                     50, data is missing for some years. See sources for details."),
+                     dataTableOutput("missingstates")),
             mainPanel(h3("States by Average Gun Ownership Ranking and Household Gun Ownership Rate"),
                       dataTableOutput("gunorder")),
            mainPanel(h3("States by Black Ranking and Average Percetange of Black Population"),
@@ -677,7 +688,12 @@ server <- function(input, output) {
       geom_smooth(), 
     tooltip = "text")
   })
-
+  
+  output$missingstates <- renderDataTable(
+    missing_states,
+    options = list(pageLength  = 5,
+                   lengthMenu = c(5, 10, 15, 25, 61))
+  )
 
   output$gunorder <- renderDataTable(
     gun_order,

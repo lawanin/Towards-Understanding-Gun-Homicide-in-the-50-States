@@ -1,7 +1,6 @@
 library(tidyverse) 
-library(rstanarm)
 crimegdpfile <- read_rds("crimegdpfile.rds")
-fit1 <- read_rds("fit1.rds")
+fitgdp <- read_rds("fitgdp.rds")
 
 gdp_order <- crimegdpfile %>%
   select(state, gdp_id, gdp_capita) %>% 
@@ -11,7 +10,7 @@ gdp_order <- crimegdpfile %>%
   arrange(mean_gdp_id)
 
 
-fit_1_plot <- fit1 %>% 
+fit_gdp_plot <- fitgdp %>% 
   as_tibble() %>% 
   ggplot(aes(x = gdp_id)) +
   geom_histogram(aes(y = after_stat(count / sum(count))), bins = 100) +

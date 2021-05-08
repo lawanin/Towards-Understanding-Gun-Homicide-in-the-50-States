@@ -5,9 +5,10 @@ account: nplawani
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3784228
-bundleId: 4454225
+bundleId: 4572904
 url: https://nplawani.shinyapps.io/final-project/
-when: 1618055508.17774
+when: 1620446214.04301
+lastSyncTime: 1620446214.04303
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data.R|test.Rmd|raw_data
+ignoredFiles: crime_gdp.rds|crimeabortiondata.R|crimeabortionfile.rds|crimecluster.R|crimeclusterfile.rds|crimegdpdata.R|crimegdpfile.rds|crimegraduationdata.R|crimegraduationfile.rds|crimegundata.R|crimegunfile.rds|crimenoturban.R|crimenoturban.rds|crimenoturbanfile.rds|crimeparentdata.R|crimeparentfile.rds|crimepovertydata.R|crimepovertyfile.rds|crimerace.rds|crimeracedata.R|crimeracefile.rds|crimereading4data.R|crimereading4file.rds|crimeurbanfile.rds|crimeurbanized.R|crimeurbanizedfile.rds|data_notes|data.R|fit1.rds|fit2.rds|fitabortion.rds|fitcluster.rds|fitgdp.rds|fitgraduation.rds|fitgun.rds|fitnoturban.rds|fitparent.rds|fitpoverty.rds|fitrace.rds|fitreading4.rds|fiturban.rds|fiturbanized.rds|README.md|regressiontable.png|regressiontablealt.rds|test.Rmd
