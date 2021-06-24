@@ -294,30 +294,31 @@ insignificant and possibly 0, as we can see from the 95% Confidence Interval."),
                         sep = "")),
            ),
   tabPanel("Tables",
-           mainPanel(h2("States by Average Variable Ownership Ranking and Average Variable"),
-                     p(strong("Below find a table of states whose crimes with weapons data
-                     has been determined too unrepresentative to be used in our analysis."),
-                     "Despite the limits of the FBI crime data, every year is represented
-                     at least once between the years 2005 and 2016. Accordingly, 
-                     there should be 50 rows for each of the tables if the variable
+           mainPanel(h2("States by Average Ranking for Variables and Average Values for Variable"),
+                     h3("States Excluded from Analysis"),
+                     p(strong("Below find a table of the states which lacked supplemental data for 
+                    25% or more of reported crimes and so were excluded from our analysis."),
+                     "Despite this, every year is represented at least once between 
+                     the years 2004 and 2016. Accordingly, in the tables below
+                     there are 50 rows for all of the tables for which the variable
                      data set was complete. For those in which there are fewer than
-                     50, data is missing for some years. See sources for details."),
+                     50, data is missing in the variable data set."),
                      dataTableOutput("missingstates")),
-            mainPanel(h3("States by Average Gun Ownership Ranking and Household Gun Ownership Rate"),
+            mainPanel(h3("States by Average Gun Ownership Ranking and  Household Gun Ownership Rate"),
                       dataTableOutput("gunorder")),
-           mainPanel(h3("States by Black Ranking and Average Percetange of Black Population"),
+           mainPanel(h3("States by Average Black Ranking and  Percetange of Black Population"),
                      dataTableOutput("blackorder")),
-           mainPanel(h3("States by Urban Ranking and Average Percetange of Population in Urban Areas"),
+           mainPanel(h3("States by Average Urban Ranking and Percetange of Population in Urban Areas"),
                      dataTableOutput("urbanorder")),
-           mainPanel(h3("States by Single Parenthood Ranking and Average Percetange of Children Living With Single Parents"),
+           mainPanel(h3("States by Average Single Parenthood Ranking and Percetange of Children Living With Single Parents"),
                      dataTableOutput("singleorder")),
-           mainPanel(h3("States by 4th Grade Reading Ranking and Average Average Score of 4th Graders"),
+           mainPanel(h3("States by Average 4th Grade Reading Ranking and Score of 4th Graders"),
                      dataTableOutput("reading4order")),
-           mainPanel(h3("States by Freshman Graduation Ranking and Average Percent of Freshman Who Graduated in Four Years"),
+           mainPanel(h3("States by Average Freshman Graduation Ranking and Percent of Freshman Who Graduated in Four Years"),
                      dataTableOutput("graduationorder")),
-           mainPanel(h3("States by GDP Ranking and Average GDP per Capita in Thousands"),
+           mainPanel(h3("States by Average GDP Ranking and GDP per Capita in Thousands"),
                      dataTableOutput("gdporder")),
-           mainPanel(h3("States by 20-24 year old Abortion Ranking and Average 20-24 year old Abortion Rate"),
+           mainPanel(h3("States by Average 20-24 year old Abortion Ranking and Average 20-24 year old Abortion Rate"),
                      dataTableOutput("abortionorder")),
   ),
            
@@ -410,7 +411,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of Proportion of Gun Ownership from 2004-2016", 
+      labs(title = "Gun Deaths by States in Order of Proportion of Gun Ownership", 
            x = "States in order of Proportion of Gun Owners", 
            y = "Gun Deaths per 100K",
            caption = "FBI (2004-2016), RAND (2020)") +
@@ -442,7 +443,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of Proportion of Blacks in Population from 2005-2016", 
+      labs(title = "Gun Deaths by States in Order of Proportion of Blacks in Population6", 
            x = "States in Order of Proportion of Blacks", 
            y = "Gun Deaths per 100K",
            caption = "FBI (2005-2016), American Community Survey (2005-2016)") +
@@ -476,7 +477,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of Proportion of Urban Population from 2004-2016",
+      labs(title = "Gun Deaths by States in Order of Proportion of Urban Population",
            x = "States in Order of Proportion of Urban Population", 
            y = "Gun Deaths per 100K",
            caption = "FBI (2004-2016), U.S. Census (2011)") +
@@ -510,7 +511,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of Proportion of Children with Single Parents from 2005-2016",
+      labs(title = "Gun Deaths by States in Order of Proportion of Children with Single Parents",
            x = "States in Order of Proportion of Children with Single Parents", 
            y = "Gun Deaths per 100K",
            caption = "FBI (2005-2016), American Community Survey (2005-2016)") +
@@ -544,7 +545,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of Proportion Below Poverty Line from 2005-2016",
+      labs(title = "Gun Deaths by States in Order of Proportion Below Poverty Line",
            x = "States in Order of Proportion of Proportion Below Poverty Line", 
            y = "Gun Deaths per 100K",
            caption = "FBI (2005-2016), American Community Survey (2005-2016)") +
@@ -578,7 +579,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of 4th Grade Reading Scores from 2004-2016",
+      labs(title = "Gun Deaths by States in Order of 4th Grade Reading Scores",
            x = "States in Order of Freshman Graduation Rate",
            y = "Gun Deaths per 100K",
            caption = "FBI (2004-2016), NAEP (1992, 1994, 1998, 2002)") +
@@ -612,7 +613,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5, 
                   height = 0.2, 
                   width = 0.2) + 
-      labs(title = "Gun Deaths by States in Order of Freshman Graduation Rate from 2004-2015",
+      labs(title = "Gun Deaths by States in Order of Freshman Graduation Rate",
            x = "States in Order of Freshman Graduation Rate",
            y = "Gun Deaths per 100K",
            caption = "FBI (2004-2015), NCES (1998-2010)") +
@@ -646,7 +647,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5,
                   height = 0.2,
                   width = 0.2) +
-      labs(title = "Gun Deaths by States in Order of GDP per Capita from 2004-2016",
+      labs(title = "Gun Deaths by States in Order of GDP per Capita",
            x = "States in Order of GDP per Capita",
            y = "Gun Deaths per 100K",
            caption = "FBI (2004-2016), BLS (2004-2016)") +
@@ -680,7 +681,7 @@ server <- function(input, output) {
       geom_jitter(alpha = 0.5,
                   height = 0.2,
                   width = 0.2) +
-      labs(title = "Gun Deaths by States in Order of Abortion Rate of 20-24 year olds from 2004-2016",
+      labs(title = "Gun Deaths by States in Order of Abortion Rate of 20-24 year olds",
            x = "States in Order of 20-24 year old Abortion Rate",
            y = "Gun Deaths per 100K",
            caption = "FBI (2005-2016), Guttmacher Inst. (2005-2016)") +

@@ -1212,9 +1212,9 @@ crime_cluster <- inner_join(crime_weapon, urban, by = "state") %>%
 
 crime_urban <- inner_join(crime_weapon, urban, by = "state") %>% 
   filter(variable == "rural") %>% 
-  mutate(urban_perc = value / summary_value) %>%
+  mutate(urban_perc = 1 - value / summary_value) %>%
   mutate(big_crime_per_capita = 100000 * gun_murder_capita) %>%
-  arrange(desc(urban_perc)) %>%
+  arrange((urban_perc)) %>%
   group_by(year) %>%
   mutate(urban_id = c(1:length(value))) %>% 
   select(-c(variable, value, summary_value))
